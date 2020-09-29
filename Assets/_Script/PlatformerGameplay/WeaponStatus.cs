@@ -6,7 +6,7 @@ public class WeaponStatus : MonoBehaviour
 {
     //THIS SCRIPT SHOULD BE ATTACHED TO WEAPONS    
     public int damage = 1;  //SET IN EDITOR
-    public bool playerMode;  //SET IN EDITOR
+    [SerializeField] bool playerMode;  //SET IN EDITOR
     //public bool enemyMode;
     GameObject player;
     GameObject enemy;

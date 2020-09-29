@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
@@ -46,8 +45,21 @@ public class PlayerControl : MonoBehaviour
 
         weapon = weaponEquip.GetComponent<BoxCollider>(); //Check this existance
 
+        ParalyzeHandler.OnParalyzeOn += ParalyzeOn;
+        ParalyzeHandler.OnParalyzeOff += ParalyzeOff;
+    }
+
+    void ParalyzeOn (ParalyzeHandler p)
+    {
+        Debug.Log("PARALYZED");
 
     }
+
+    void ParalyzeOff(ParalyzeHandler p)
+    {
+        Debug.Log("RECOVERED");
+    }
+
 
     void PlayerMove()
     {
@@ -95,6 +107,12 @@ public class PlayerControl : MonoBehaviour
             isMove = true; //in case later need action with move condition
             anim.SetBool("isMove", true);
         }
+
+        if (moveSpeed <= allowMove)
+        {
+            isMove = false;
+            anim.SetBool("isMove", false); //ANIMATOR toggle off move
+        }
     }
 
     //AtkSpeed function
@@ -140,16 +158,12 @@ public class PlayerControl : MonoBehaviour
     {
         if(Input.GetButtonDown("Fire1") && weapon.enabled == false) //Attack
         {
-            //weapon.enabled = true; //Take care of this later
+            weapon.enabled = true;
             anim.SetTrigger("atk1"); //ANIMATOR
             StartCoroutine(AttackDelay());
         }            
         
-        if (moveSpeed <= allowMove)
-        {
-            isMove = false;
-            anim.SetBool("isMove", false); //ANIMATOR toggle off move
-        }
+
 
         if (control.isGrounded)
         {

@@ -51,6 +51,7 @@ public class CameraMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(yRot, xRot, 0);
 
         //ZOOM
+        /*
         float zoomDir = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed * -1;
         zoomPos = cam.transform.localPosition.z + (zoomDir * zoomPos * Time.deltaTime);
         zoomPosY = cam.transform.localPosition.y + ((zoomDir * 2.5f) * zoomPosY * Time.deltaTime);
@@ -58,5 +59,6 @@ public class CameraMovement : MonoBehaviour
         zoomPosY = Mathf.Clamp(zoomPosY, zoomMinY, zoomMaxY);
         //cam.transform.localPosition = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, zoomPos);
         cam.transform.localPosition = new Vector3(cam.transform.localPosition.x, zoomPosY, zoomPos);
+        */
     }
 }
