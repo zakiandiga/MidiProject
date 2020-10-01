@@ -9,13 +9,15 @@ public class MinionBehavior : MonoBehaviour
     float atkDelay = 0.5f;
     float atkStart = 0.2f;
     float patrolDelay;
-    float patrolSpeed = 1.5f;
-    float chasingSpeed = 3.5f;
+    float patrolSpeed = 10f;
+    float chasingSpeed = 20f;
 
-    float chasingRadius = 13f;
-    float patrolRadius = 6f;
+    float chasingRadius = 16f;
+    float patrolRadius = 8f;
 
     public GameObject weaponOne;
+
+    [SerializeField] private bool allowGrow = false;
     BoxCollider horn;
     GameObject player;
     NavMeshAgent agent;
@@ -29,8 +31,16 @@ public class MinionBehavior : MonoBehaviour
     bool isPatrol = false; //STATE MACHINE
     bool isWalk = false;
 
+    [SerializeField] bool isGrow = false;
+
     Vector3 chasePos;
     Vector3 patrolPos;
+    Vector3 originScale = new Vector3 (0.6f, 0.6f, 0.6f);
+    Vector3 growScale = new Vector3(2,2,2);
+    Vector3 growing;
+    Vector3 shrinking;
+
+    float lerpScale = 10;
 
     Animator anim;
 
@@ -40,20 +50,34 @@ public class MinionBehavior : MonoBehaviour
         anim = GetComponent<Animator>();
         player = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
-        ParalyzeHandler.OnGiantGrowthOn += Growing;
-        ParalyzeHandler.OnGiantGrowthOff += Shrinking;
+
+        //Subscribe to EventAnnouncer events
+        EventAnnouncer.OnGiantGrowthOn += Growing;
+        EventAnnouncer.OnGiantGrowthOff += Shrinking;
     }
 
-    void Growing(ParalyzeHandler p)
+
+
+    void OnDestroy()
     {
+        EventAnnouncer.OnGiantGrowthOn -= Growing;
+        EventAnnouncer.OnGiantGrowthOff -= Shrinking;
+    }
+
+    void Growing(EventAnnouncer p)
+    {
+        transform.localScale = growScale;
         Debug.Log("Enemy Growing!!");
-
     }
 
-    void Shrinking(ParalyzeHandler p)
+    
+    void Shrinking(EventAnnouncer p)
     {
-        Debug.Log("Enemy Shrinking!!");
+        transform.localScale = originScale;
+        Debug.Log("Enemy shrinking!!");
     }
+            
+    
 
     IEnumerator MinionPatrol()
     {
@@ -103,6 +127,7 @@ public class MinionBehavior : MonoBehaviour
     }
 
     //PLAYER DETECTION --> CHANGE TO NOTE IN OBSERVER
+    
     void OnTriggerStay(Collider col)
     {
         if (col.gameObject.tag == "Player" && isChasing == false)
@@ -122,14 +147,28 @@ public class MinionBehavior : MonoBehaviour
             //print("ENEMY IS TOO FAR, STOP CHASING");
         }
     }
+    
 
+
+            
     void OnCollisionEnter(Collision col)
     {
-        if(col.gameObject.tag == "Player")
+        Debug.Log("collide" + col.gameObject.tag);
+
+        if (col.gameObject.tag == "Player")
         {            
             agent.SetDestination(transform.position);
             MinionStab();
         }
+
+        if (col.gameObject.tag == "PlayerWeapon")
+        {
+            Destroy(this.gameObject);
+            Debug.Log("Bug die");
+
+        }
+
+
     }
 
     IEnumerator BugAttackDelay() //Testing attack function
@@ -163,6 +202,8 @@ public class MinionBehavior : MonoBehaviour
         {
             StartCoroutine(ChasePlayer());
         }
+
+
 
         //if (isAttack == false) //and player is in range
         //{

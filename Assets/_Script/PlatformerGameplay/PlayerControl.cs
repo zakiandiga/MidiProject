@@ -12,6 +12,7 @@ public class PlayerControl : MonoBehaviour
     public KeyCode sprint;
     float moveSpeed;
     public float jumpSpeed = 10f;
+    public float randomJumpSpeed = 5f;
     public static bool isWalk = false;
     public static bool isMove = false;
     public PlayerStatus status;
@@ -34,6 +35,10 @@ public class PlayerControl : MonoBehaviour
     BoxCollider weapon;  //In case adding equip weapon feature
     public static float weaponDamage = 10f; //In case need to be accessed by damage calculation script
     float atkSpeed = 1.3f; //Sync this with animation!
+
+    private PlayerState playerState = PlayerState.normal;
+
+    public enum PlayerState { normal, paralyze, randomJump }
     
     void Start()
     {
@@ -45,21 +50,41 @@ public class PlayerControl : MonoBehaviour
 
         weapon = weaponEquip.GetComponent<BoxCollider>(); //Check this existance
 
-        ParalyzeHandler.OnParalyzeOn += ParalyzeOn;
-        ParalyzeHandler.OnParalyzeOff += ParalyzeOff;
+        EventAnnouncer.OnParalyzeOn += ParalyzeOn;
+        EventAnnouncer.OnParalyzeOff += ParalyzeOff;
+        EventAnnouncer.OnRandomJump += RandomJump;
     }
 
-    void ParalyzeOn (ParalyzeHandler p)
+    void ParalyzeOn (EventAnnouncer e)
     {
-        Debug.Log("PARALYZED");
-
+        control.enabled = false;
+        anim.SetBool("paralyzed", true);
+        //Debug.Log("PARALYZED");
+        
     }
 
-    void ParalyzeOff(ParalyzeHandler p)
+    void ParalyzeOff(EventAnnouncer p)
     {
-        Debug.Log("RECOVERED");
+        control.enabled = true;
+        anim.SetBool("paralyzed", false);
+        //Debug.Log("RECOVERED");
     }
 
+    public void RandomJump(EventAnnouncer p)
+    {
+        playerState = PlayerState.randomJump;
+        StartCoroutine("OnRandomJump");
+        Debug.Log("RANDOM JUMP");
+
+    }
+
+    IEnumerator OnRandomJump()
+    {
+        float boostTime = 0.5f;
+
+        yield return new WaitForSeconds(boostTime);
+        playerState = PlayerState.normal;
+    }
 
     void PlayerMove()
     {
@@ -161,11 +186,11 @@ public class PlayerControl : MonoBehaviour
             weapon.enabled = true;
             anim.SetTrigger("atk1"); //ANIMATOR
             StartCoroutine(AttackDelay());
-        }            
-        
+        }
 
+        WalkRun();
 
-        if (control.isGrounded)
+        if (control.isGrounded && playerState != PlayerState.randomJump)
         {
             InputMagnitude();
 
@@ -174,6 +199,13 @@ public class PlayerControl : MonoBehaviour
                 anim.SetTrigger("jump"); //ANIMATOR jump trigger
                 moveDir.y = jumpSpeed;
             }
+        }
+
+        if(playerState == PlayerState.randomJump)
+        {
+            InputMagnitude();
+            anim.SetTrigger("jump"); //ANIMATOR jump trigger
+            moveDir.y = jumpSpeed;
         }
 
         moveDir.y += Physics.gravity.y * Time.deltaTime;

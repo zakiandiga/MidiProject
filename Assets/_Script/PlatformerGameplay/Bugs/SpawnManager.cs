@@ -18,44 +18,38 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
+        EventAnnouncer.OnSpawn += MinionSpawning;
+        /*
         for (int i = 0; i < maxMinionCount; ++i) 
         {
             posX = Random.Range(-20, 20);
-            posY = 0;
-            posZ = Random.Range(-12, 20);
+            posY = 10;
+            posZ = Random.Range(-20, 20);
             minion = Instantiate(originalMinion, new Vector3(posX, posY, posZ), Quaternion.identity, enemyParent);
             minion.SetActive(true);
             currentMinionCount = maxMinionCount;
             originalMinion.SetActive(false);
         }
+        */
     }
 
-
-    /*
-    IEnumerator MinionSpawn()
+    private void MinionSpawning(EventAnnouncer e)
     {
-        isRespawning = true;
-        while(currentMinionCount < maxMinionCount)
+        posX = Random.Range(-20, 20);
+        posY = 10;
+        posZ = Random.Range(-20, 20);
+        if (currentMinionCount < maxMinionCount)
         {
-            posX = Random.Range(-20, 20);
-            posY = 0;
-            posZ = Random.Range(-12, 20);
             minion = Instantiate(originalMinion, new Vector3(posX, posY, posZ), Quaternion.identity, enemyParent);
             minion.SetActive(true);
             currentMinionCount += 1;
             print("minion respawned!");
-            yield return new WaitForSeconds(respawnTime);
-            isRespawning = false;
         }
-    }
+    }    
     
     void Update()
     {
-        if(currentMinionCount < maxMinionCount && isRespawning == false)
-        {
-            isFull = false;
-            StartCoroutine(MinionSpawn());
-        }
+
     }
-    */
+    
 }
