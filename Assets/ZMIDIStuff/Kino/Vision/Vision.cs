@@ -44,7 +44,7 @@ namespace Kino
         }
 
         [SerializeField, Range(0, 1)]
-        float _blendRatio = 0.5f;
+        public float _blendRatio = 0.5f;
 
         [SerializeField]
         bool _preferDepthNormals;
@@ -54,7 +54,7 @@ namespace Kino
         #region Properties for depth
 
         [SerializeField]
-        float _depthRepeat = 1;
+        public float _depthRepeat = 1;
 
         #endregion
 
