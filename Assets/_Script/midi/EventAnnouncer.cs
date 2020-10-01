@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParalyzeHandler : MonoBehaviour
+public class EventAnnouncer : MonoBehaviour
 {
-    public static event Action<ParalyzeHandler> OnParalyzeOn;
-    public static event Action<ParalyzeHandler> OnParalyzeOff;
-    public static event Action<ParalyzeHandler> OnGiantGrowthOn;
-    public static event Action<ParalyzeHandler> OnGiantGrowthOff;
+    public static event Action<EventAnnouncer> OnParalyzeOn;
+    public static event Action<EventAnnouncer> OnParalyzeOff;
+    public static event Action<EventAnnouncer> OnGiantGrowthOn;
+    public static event Action<EventAnnouncer> OnGiantGrowthOff;
+    public static event Action<EventAnnouncer> OnRandomJump;
+    public static event Action<EventAnnouncer> OnSpawn;
 
     //Attack power -> rigidbody force/Damage
 
@@ -47,6 +49,22 @@ public class ParalyzeHandler : MonoBehaviour
         if (OnParalyzeOff != null)
         {
             OnParalyzeOff(this);
+        }
+    }
+
+    public void RandomJump(float f)
+    {
+        if (OnRandomJump != null)
+        {
+            OnRandomJump(this);
+        }
+    }
+        
+    public void Spawn(float f)
+    {
+        if(OnSpawn != null)
+        {
+            OnSpawn(this);
         }
     }
 
