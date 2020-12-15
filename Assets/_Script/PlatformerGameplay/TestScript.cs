@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TestScript : MonoBehaviour
 {
-    void OnCollisionEnter()
+    void OnCollisionEnter(Collision col)
     {
         Debug.Log("Collide");
     }

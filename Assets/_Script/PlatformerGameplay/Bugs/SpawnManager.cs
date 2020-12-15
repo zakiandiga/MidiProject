@@ -36,7 +36,7 @@ public class SpawnManager : MonoBehaviour
     private void MinionSpawning(EventAnnouncer e)
     {
         posX = Random.Range(-20, 20);
-        posY = 10;
+        posY = 3;
         posZ = Random.Range(-20, 20);
         if (currentMinionCount < maxMinionCount)
         {

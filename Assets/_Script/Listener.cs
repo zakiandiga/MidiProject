@@ -9,7 +9,7 @@ public class Listener : MonoBehaviour
     public void Printing(float something)
     {
         something = 10;
-        print("NoteInput play note");
+        print("trigger from step");
         
     }
 }

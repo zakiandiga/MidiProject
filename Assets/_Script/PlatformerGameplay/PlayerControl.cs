@@ -22,12 +22,16 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float runSpeed;
     [SerializeField] float sprintSpeed;
     [SerializeField] float throttle;
+
+    public float speedMod;
  
     //public float gravity;
     public float allowMove;
     public Transform cameraController;
     
     private Vector3 moveDir = Vector3.zero;
+
+    [SerializeField] Vector3 originPos;
     CharacterController control;
 
     public GameObject weaponEquip; //OPEN THIS LATER
@@ -234,5 +238,17 @@ public class PlayerControl : MonoBehaviour
         //control.Move((moveDir * throttle) * Time.deltaTime);
 
         //rb.MovePosition(rb.position + moveDir * throttle * Time.deltaTime);
+    }
+
+    void OnTriggerEnter(Collider col)
+    {
+        
+
+        if (col.gameObject.tag == "Fall")
+        {
+            control.enabled = false;
+            transform.position = originPos;
+            control.enabled = true;
+        }
     }
 }

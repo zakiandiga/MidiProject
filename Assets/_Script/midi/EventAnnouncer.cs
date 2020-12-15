@@ -12,7 +12,17 @@ public class EventAnnouncer : MonoBehaviour
     public static event Action<EventAnnouncer> OnRandomJump;
     public static event Action<EventAnnouncer> OnSpawn;
 
+    public static event Action<EventAnnouncer> OnKick;
+
     //Attack power -> rigidbody force/Damage
+
+    public void KickDrum(float f)
+    {
+        if(OnKick != null)
+        {
+            OnKick(this);
+        }
+    }
 
     public void GiantGrowthOn(float f)
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -44,13 +45,18 @@ public class MinionBehavior : MonoBehaviour
 
     Animator anim;
 
-    void Start()
+    BoxCollider bc;
+
+    public static event Action<MinionBehavior> OnDie;
+
+    void Awake()
     {
         horn = weaponOne.GetComponent<BoxCollider>();  //Horn Collider script on Head Game Object!!
         anim = GetComponent<Animator>();
         player = GameObject.FindWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
-
+        bc = GetComponent<BoxCollider>();
+        bc.enabled = true;
         //Subscribe to EventAnnouncer events
         EventAnnouncer.OnGiantGrowthOn += Growing;
         EventAnnouncer.OnGiantGrowthOff += Shrinking;
@@ -81,11 +87,11 @@ public class MinionBehavior : MonoBehaviour
 
     IEnumerator MinionPatrol()
     {
-        float walkTime = Random.Range(2, 5);
-        float walkWait = Random.Range(2, 5);
+        float walkTime = UnityEngine.Random.Range(2, 5);
+        float walkWait = UnityEngine.Random.Range(2, 5);
         float patrolX, patrolZ;
-        patrolX = transform.position.x + Random.Range(-5f, 5f);
-        patrolZ = transform.position.z + Random.Range(-5f, 5f);
+        patrolX = transform.position.x + UnityEngine.Random.Range(-5f, 5f);
+        patrolZ = transform.position.z + UnityEngine.Random.Range(-5f, 5f);
         patrolPos = new Vector3(patrolX, transform.position.y, patrolZ);
         agent.SetDestination(patrolPos);
         //print("I am patroling again");
@@ -153,23 +159,47 @@ public class MinionBehavior : MonoBehaviour
             
     void OnCollisionEnter(Collision col)
     {
-        Debug.Log("collide" + col.gameObject.tag);
-
+        /*
         if (col.gameObject.tag == "Player")
         {            
             agent.SetDestination(transform.position);
             MinionStab();
         }
+        */
 
         if (col.gameObject.tag == "PlayerWeapon")
         {
-            Destroy(this.gameObject);
-            Debug.Log("Bug die");
+            Die();
+            bc.enabled = false;
 
         }
 
 
     }
+
+    public void Die()
+    {
+        anim.SetTrigger("gotHit");
+        StopCoroutine("ChasePlayer");
+        StopCoroutine("MinionPatrol");
+        patrolSpeed = 0;
+        chasingSpeed = 0;
+        isPatrol = false;
+        isChasing = false;
+        Debug.Log("Bug die");
+        Invoke("RemoveCorpse", 2.5f);
+        if (OnDie != null)
+        {
+            OnDie(this);
+        }
+    }
+
+    private void RemoveCorpse()
+    {
+        this.gameObject.SetActive(false);
+        
+    }
+
 
     IEnumerator BugAttackDelay() //Testing attack function
     {
